@@ -21,8 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-
-@CrossOrigin(origins = "http://107.20.189.174:3000")
 @RestController
 @RequestMapping("/api/crosshairs")
 public class CrosshairController {
