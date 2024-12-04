@@ -43,8 +43,6 @@
 			<artifactId>spring-boot-maven-plugin</artifactId>
 			<version>3.4.0</version>
 		</dependency>
-		
-		
 
 
 		<dependency>
@@ -95,6 +93,20 @@
 					<testFailureIgnore>true</testFailureIgnore>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Main-Class>
+								com.example.AwsChProject.AwsChProjectApplication</Main-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 		</plugins>
 	</build>
 
