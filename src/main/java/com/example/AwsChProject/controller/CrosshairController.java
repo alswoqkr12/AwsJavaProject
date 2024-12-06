@@ -3,6 +3,8 @@ package com.example.AwsChProject.controller;
 import com.example.AwsChProject.exception.ResourceNotFoundException;
 import com.example.AwsChProject.model.Crosshair;
 import com.example.AwsChProject.repository.CrosshairRepository;
+import com.example.AwsChProject.service.S3Uploader;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -25,36 +27,30 @@ import java.util.List;
 @RequestMapping("/api/crosshairs")
 public class CrosshairController {
 
-	@Autowired
-	private CrosshairRepository crosshairRepository;
 
-	@Value("${file.upload-dir}")
-	private String uploadDir;
+    @Autowired
+    private CrosshairRepository crosshairRepository;
 
-	@Transactional
-	@PostMapping
-	public Crosshair uploadCrosshair(@RequestParam("name") String name, @RequestParam("description") String description,
-			@RequestParam("code") String code, @RequestParam("image") MultipartFile image) {
-		try {
-			// 파일 이름을 현재 시간 기반으로 설정하여 충돌을 방지
-			String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-			Path filePath = Paths.get(uploadDir, fileName);
+    @Autowired
+    private S3Uploader s3Uploader;  // S3Uploader 서비스 주입
 
-			// 디렉토리가 없으면 생성
-			Files.createDirectories(filePath.getParent());
+    // Crosshair 업로드 (이미지 파일을 S3에 업로드하고 RDS에 URL 저장)
+    @PostMapping
+    public Crosshair uploadCrosshair(@RequestParam("name") String name,
+                                     @RequestParam("description") String description,
+                                     @RequestParam("code") String code,
+                                     @RequestParam("image") MultipartFile image) {
+        try {
+            // 이미지 파일을 S3에 업로드하고 URL을 반환
+            String imageUrl = s3Uploader.uploadFile(image);  // S3Uploader에서 URL을 받아옴
 
-			// 이미지 파일을 서버에 저장
-			image.transferTo(filePath.toFile());
-
-			// 이미지 경로를 DB에 저장할 수 있도록 Crosshair 객체 생성
-			Crosshair crosshair = new Crosshair(name, description, code, "/images/" + fileName); // DB에는 파일 이름만 저장
-			return crosshairRepository.save(crosshair);
-		} catch (IOException e) {
-			throw new RuntimeException("파일 저장 실패: " + e.getMessage());
-		}
-	}
-
-	
+            // Crosshair 객체를 생성하고, S3 URL을 DB에 저장
+            Crosshair crosshair = new Crosshair(name, description, code, imageUrl);
+            return crosshairRepository.save(crosshair);
+        } catch (Exception e) {
+            throw new RuntimeException("파일 업로드 실패: " + e.getMessage());
+        }
+    }
 
 
 }
