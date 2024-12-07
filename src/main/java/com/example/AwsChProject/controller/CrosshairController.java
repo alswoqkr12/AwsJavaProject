@@ -39,7 +39,7 @@ public class CrosshairController {
 	            Files.copy(image.getInputStream(), filePath);
 
 	            // 이미지 URL 생성 (로컬 서버 기준 경로)
-	            String imageUrl = "/images/" + fileName;
+	            String imageUrl = fileName;
 
 	            // Crosshair 객체 저장
 	            Crosshair crosshair = new Crosshair(name, description, code, imageUrl);
