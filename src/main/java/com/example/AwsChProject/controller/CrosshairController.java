@@ -6,6 +6,8 @@ import com.example.AwsChProject.repository.CrosshairRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+
+@CrossOrigin(origins = "http://107.20.189.174:3000")
 @RestController
 @RequestMapping("/api/crosshairs")
 public class CrosshairController {

@@ -11,6 +11,7 @@ import com.example.AwsChProject.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class AuthController {
 
     @Autowired
